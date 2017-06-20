@@ -1,28 +1,30 @@
 package pl.rwc.args;
 
+import java.util.List;
+
 import static pl.rwc.args.ArgsException.Code.*;
 
-public interface ArgMarshaller {
-    <T> T parse(String value);
+public interface ArgMarshaller<T> {
+    T parse(Values values);
 }
 
-class UnsupportedTypeMarshaller implements ArgMarshaller {
+class UnsupportedTypeMarshaller implements ArgMarshaller<Void> {
     @Override
-    public Void parse(String value) {
-        throw new ArgsException(UNSUPPORTED_TYPE, value);
+    public Void parse(Values values) {
+        throw new ArgsException(UNSUPPORTED_TYPE, values.all());
     }
 }
 
-class StringMarshaller implements ArgMarshaller {
+class StringMarshaller implements ArgMarshaller<String> {
     @Override
-    public String parse(String value) {
-        return value;
+    public String parse(Values values) {
+        return values.single().orElse(null);
     }
 }
 
-class IntegerMarshaller implements ArgMarshaller {
+class IntegerMarshaller implements ArgMarshaller<Integer> {
     @Override
-    public Integer parse(String value) {
-        return Integer.parseInt(value);
+    public Integer parse(Values values) {
+        return values.single().map(Integer::parseInt).orElse(null);
     }
 }

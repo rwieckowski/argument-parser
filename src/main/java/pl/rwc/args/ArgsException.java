@@ -1,5 +1,7 @@
 package pl.rwc.args;
 
+import java.util.List;
+
 public class ArgsException extends RuntimeException {
     private final Code code;
     private final String[] values;
@@ -8,6 +10,10 @@ public class ArgsException extends RuntimeException {
         super(code.formatMessage(values));
         this.code = code;
         this.values = values;
+    }
+
+    public ArgsException(Code code, List<String> values) {
+        this(code, values.toArray(new String[]{}));
     }
 
     private String getErrorMessage() {

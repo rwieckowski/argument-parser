@@ -73,7 +73,7 @@ class ArgsExceptionValueMatcher extends TypeSafeMatcher<ArgsException> {
     @Override
     public void describeTo(Description description) {
         description
-                .appendText("value ")
+                .appendText("single ")
                 .appendValue(value);
         if (pos > -1) {
             description.appendText(" at ");

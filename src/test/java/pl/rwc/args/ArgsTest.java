@@ -63,12 +63,51 @@ public class ArgsTest {
     }
 
     @Test
+    public void optionalArgumentPresent() throws Exception {
+        args.optional("foo");
+
+        int parsed = parse("lorem");
+
+        assertParsedArguments(1, parsed);
+        assertArgumentValue("lorem", "foo");
+    }
+
+    @Test
+    public void optionalArgumentNotPresent() throws Exception {
+        args.optional("foo");
+
+        int parsed = parse();
+
+        assertParsedArguments(0, parsed);
+        assertArgumentValue(null, "foo");
+    }
+
+    @Test
+    public void optionalArgumentPresentWithDefaultValue() throws Exception {
+        args.optional("foo").orDefaultValue("ipsum");
+
+        int parsed = parse("lorem");
+
+        assertParsedArguments(1, parsed);
+        assertArgumentValue("lorem", "foo");
+
+    }
+
+    @Test
+    public void optionalArgumentNotPresentWithDefaultValue() throws Exception {
+        args.optional("foo").orDefaultValue("ipsum");
+
+        int parsed = parse();
+
+        assertParsedArguments(0, parsed);
+        assertArgumentValue("ipsum", "foo");
+
+    }
+
+    @Test
     public void marshallerError() throws Exception {
-        ArgMarshaller INVALID_FORMAT_MARSHALLER = new ArgMarshaller() {
-            @Override
-            public <T> T parse(String value) {
-                throw new RuntimeException("Parse failed");
-            }
+        ArgMarshaller<Object> INVALID_FORMAT_MARSHALLER = value -> {
+            throw new RuntimeException("Parse failed");
         };
         args.required("foo");
         parse("lorem");
@@ -92,7 +131,7 @@ public class ArgsTest {
     }
 
     private void assertArgumentValue(String expected, String name) {
-        assertEquals("argument '" + name + "' value", expected, args.getString(name));
+        assertEquals("argument '" + name + "' single", expected, args.getString(name));
     }
 
 }
