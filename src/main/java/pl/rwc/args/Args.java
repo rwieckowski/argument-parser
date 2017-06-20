@@ -9,6 +9,7 @@ public class Args {
     private Map<Class,ArgMarshaller> marshallers = new HashMap<Class,ArgMarshaller>() {{
         put(String.class, new StringMarshaller());
         put(Integer.class, new IntegerMarshaller());
+        put(List.class, new StringListMarshaller());
     }};
 
 
@@ -41,6 +42,17 @@ public class Args {
         return arg;
     }
 
+    public Arg collection(String name) {
+        Arg arg = new Arg(Arg.Type.COLLECTION, name);
+        args.add(arg);
+        return arg;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getStrings(String name) {
+        return (List<String>)getValue(List.class, name);
+    }
+
     public String getString(String name) {
         return getValue(String.class, name);
     }
@@ -68,7 +80,7 @@ public class Args {
 class Arg {
     final Type type;
     final String name;
-    Optional<String> defaultValue = Optional.empty();
+    Values defaultValue = Values.empty();
 
     Arg(Type type, String name) {
         this.type = type;
@@ -76,7 +88,7 @@ class Arg {
     }
 
     public Arg orDefaultValue(String defaultValue) {
-        this.defaultValue = Optional.ofNullable(defaultValue);
+        this.defaultValue = Values.of(defaultValue);
         return this;
     }
 
@@ -89,18 +101,21 @@ class Arg {
             case OPTIONAL:
                 unmarshaller = new OptionalUnmarshaller();
                 break;
+            case COLLECTION:
+                unmarshaller = new CollectionUnmarshaller();
+                break;
             default:
                 throw new RuntimeException("Unsupported argument type");
         }
 
-        if (defaultValue.isPresent()) {
-            unmarshaller = new DefaultValueUnmarshaller(unmarshaller, defaultValue.get());
+        if (!defaultValue.isEmpty()) {
+            unmarshaller = new DefaultValueUnmarshaller(unmarshaller, defaultValue);
         }
 
         return unmarshaller;
     }
 
     enum Type {
-        REQUIRED, OPTIONAL, REQUIRED_COLLECTION, OPTIONAL_COLLECTION
+        REQUIRED, OPTIONAL, COLLECTION
     }
 }

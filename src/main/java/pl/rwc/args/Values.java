@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Values {
-    private final List<String> values;
+        private final List<String> values;
 
     public static Values of(String value) {
         return new Values(Collections.singletonList(value));

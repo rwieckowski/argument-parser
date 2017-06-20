@@ -5,6 +5,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 import static pl.rwc.args.ArgsException.Code.*;
 import static pl.rwc.args.ArgsExceptionMatchers.*;
@@ -101,7 +104,16 @@ public class ArgsTest {
 
         assertParsedArguments(0, parsed);
         assertArgumentValue("ipsum", "foo");
+    }
 
+    @Test
+    public void collectionArgument() throws Exception {
+        args.collection("foo");
+
+        int parsed = parse("lorem", "ipsum", "dolor");
+
+        assertParsedArguments(3, parsed);
+        assertArgumentValues(Arrays.asList("lorem", "ipsum", "dolor"), "foo");
     }
 
     @Test
@@ -131,7 +143,11 @@ public class ArgsTest {
     }
 
     private void assertArgumentValue(String expected, String name) {
-        assertEquals("argument '" + name + "' single", expected, args.getString(name));
+        assertEquals("argument '" + name + "' value", expected, args.getString(name));
+    }
+
+    private void assertArgumentValues(List<String> expected, String name) {
+        assertEquals("argument '" + name + "' list of values", expected, args.getStrings(name));
     }
 
 }

@@ -1,5 +1,7 @@
 package pl.rwc.args;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 public interface ArgUnmarshaller {
@@ -24,18 +26,29 @@ class OptionalUnmarshaller implements ArgUnmarshaller {
     }
 }
 
+class CollectionUnmarshaller implements ArgUnmarshaller {
+    @Override
+    public Values unmarshall(ListIterator<String> iterator) {
+        List<String> values = new LinkedList<>();
+        while (iterator.hasNext()) {
+            values.add(iterator.next());
+        }
+        return Values.of(values);
+    }
+}
+
 class DefaultValueUnmarshaller implements ArgUnmarshaller {
     private final ArgUnmarshaller unmarshaller;
-    private final String defaultValue;
+    private final Values defaultValues;
 
-    DefaultValueUnmarshaller(ArgUnmarshaller unmarshaller, String defaultValue) {
+    DefaultValueUnmarshaller(ArgUnmarshaller unmarshaller, Values defaultValues) {
         this.unmarshaller = unmarshaller;
-        this.defaultValue = defaultValue;
+        this.defaultValues = defaultValues;
     }
 
     @Override
     public Values unmarshall(ListIterator<String> iterator) {
         Values values = unmarshaller.unmarshall(iterator);
-        return values.isEmpty() ? Values.of(defaultValue) : values;
+        return values.isEmpty() ? defaultValues : values;
     }
 }

@@ -28,3 +28,10 @@ class IntegerMarshaller implements ArgMarshaller<Integer> {
         return values.single().map(Integer::parseInt).orElse(null);
     }
 }
+
+class StringListMarshaller implements ArgMarshaller<List<String>> {
+    @Override
+    public List<String> parse(Values values) {
+        return values.all();
+    }
+}
